@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James "Doc" Cartwright</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c1810 0%, #654321 50%, #8B4513 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 1s ease-in-out 3s forwards;
+        }
+        
+        .loading-image {
+            width: 300px;
+            height: 200px;
+            background: url('doclogo.png') center/contain no-repeat;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+        
+        .loading-text {
+            color: #F5DEB3;
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-top: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        /* Music Player Styles */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #654321, #8B4513);
+            border: 3px solid #D2B48C;
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            color: #F5DEB3;
+            font-family: 'Cinzel', serif;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .music-player:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+        
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .play-btn {
+            background: #D2B48C;
+            color: #654321;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .play-btn:hover {
+            background: #F5DEB3;
+            transform: scale(1.1);
+        }
+        
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .track-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .track-artist {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .volume-slider {
+            width: 60px;
+            height: 4px;
+            background: rgba(245, 222, 179, 0.3);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #D2B48C;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* Main Site Styles */
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #F5DEB3 100%);
+            background-attachment: fixed;
+            color: #3E2723;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="grain" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="20" cy="20" r="1" fill="%23654321" opacity="0.1"/><circle cx="80" cy="40" r="1" fill="%23654321" opacity="0.1"/><circle cx="40" cy="80" r="1" fill="%23654321" opacity="0.1"/><circle cx="60" cy="10" r="1" fill="%23654321" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(62, 39, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #8B4513;
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transform: translateY(-100px);
+            animation: slideDown 1s ease-out 3.5s forwards;
+        }
+        
+        @keyframes slideDown {
+            to { transform: translateY(0); }
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #D2B48C;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-brand:hover {
+            text-shadow: 0 0 10px #D2B48C;
+            transform: scale(1.05);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #D2B48C;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: #F5DEB3;
+            transform: translateY(-2px);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #8B4513;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 4s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: rgba(245, 222, 179, 0.9);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            border: 3px solid #8B4513;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            transform: scale(0.9);
+            animation: scaleIn 0.8s ease-out 4.5s forwards;
+        }
+        
+        @keyframes scaleIn {
+            to { transform: scale(1); }
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #8B4513, #D2B48C, #8B4513);
+            border-radius: 20px;
+            z-index: -1;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            to { background: linear-gradient(405deg, #8B4513, #D2B48C, #8B4513); }
+        }
+        
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: #654321;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            to { text-shadow: 2px 2px 20px rgba(101, 67, 33, 0.8); }
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #8B4513;
+            font-style: italic;
+            margin-bottom: 1rem;
+            animation: typewriter 2s steps(60) 5s forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid #8B4513;
+            width: 0;
+        }
+        
+        @keyframes typewriter {
+            to { width: 100%; }
+        }
+        
+        .character-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .info-item {
+            background: rgba(139, 69, 19, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #8B4513;
+            transition: all 0.3s ease;
+            transform: translateX(-20px);
+            opacity: 0;
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+        
+        .info-item:nth-child(1) { animation-delay: 5.5s; }
+        .info-item:nth-child(2) { animation-delay: 5.7s; }
+        .info-item:nth-child(3) { animation-delay: 5.9s; }
+        .info-item:nth-child(4) { animation-delay: 6.1s; }
+        .info-item:nth-child(5) { animation-delay: 6.3s; }
+        
+        @keyframes slideInLeft {
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .info-item:hover {
+            transform: translateX(10px) scale(1.05);
+            background: rgba(139, 69, 19, 0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+            background: rgba(245, 222, 179, 0.8);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 2px solid #D2B48C;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.5s ease;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        
+        .section.animate {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #8B4513, #D2B48C, #8B4513);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #D2B48C;
+            padding-bottom: 1rem;
+        }
+        
+        .section-icon {
+            font-size: 2rem;
+            color: #8B4513;
+            margin-right: 1rem;
+            width: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover .section-icon {
+            transform: rotate(10deg) scale(1.2);
+            color: #654321;
+        }
+        
+        .section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #654321;
+            font-weight: 600;
+        }
+        
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .section li {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            padding-left: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .section li:hover {
+            transform: translateX(10px);
+            color: #654321;
+        }
+        
+        .section li::before {
+            content: '★';
+            position: absolute;
+            left: 0;
+            color: #8B4513;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .section li:hover::before {
+            transform: rotate(72deg) scale(1.2);
+            color: #654321;
+        }
+        
+        .quote-box {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: #F5DEB3;
+            padding: 3rem;
+            text-align: center;
+            border-radius: 15px;
+            margin: 3rem 0;
+            border: 3px solid #D2B48C;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quote-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(245, 222, 179, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 4s linear infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .quote-box blockquote {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quote-box blockquote::before,
+        .quote-box blockquote::after {
+            content: '"';
+            font-size: 3rem;
+            color: #D2B48C;
+            font-family: serif;
+            animation: float 2s ease-in-out infinite alternate;
+        }
+        
+        .quote-box blockquote::before {
+            position: absolute;
+            top: -10px;
+            left: -20px;
+        }
+        
+        .quote-box blockquote::after {
+            position: absolute;
+            bottom: -30px;
+            right: -20px;
+            animation-delay: 1s;
+        }
+        
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-10px); }
+        }
+        
+        /* Scroll Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .container {
+                padding: 80px 1rem 1rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .character-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .quote-box {
+                padding: 2rem 1rem;
+            }
+            
+            .quote-box blockquote {
+                font-size: 1.2rem;
+            }
+            
+            .music-player {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+            
+            .track-info {
+                min-width: 120px;
+            }
+            
+            .volume-slider {
+                width: 40px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .section-icon {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+            
+            .loading-image {
+                width: 250px;
+                height: 150px;
+            }
+            
+            .loading-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-image"></div>
+        <div class="loading-text">Caricamento...</div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player">
+        <div class="player-controls">
+            <button class="play-btn" id="playBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <div class="track-info">
+                <div class="track-title">Doc Cartwright</div>
+                <div class="track-artist">Lorenzo Sormani</div>
+            </div>
+            <div class="volume-control">
+                <i class="fas fa-volume-up" style="font-size: 0.8rem;"></i>
+                <input type="range" class="volume-slider" min="0" max="100" value="50" id="volumeSlider">
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand">Doc Cartwright</a>
+            <ul class="nav-links">
+                <li><a href="#infanzia">Infanzia</a></li>
+                <li><a href="#svolta">La Svolta</a></li>
+                <li><a href="#erranti">Anni Erranti</a></li>
+                <li><a href="#rapina">Rapina</a></li>
+                <li><a href="#fuga">Fuga</a></li>
+                <li><a href="#westborn">Westborn</a></li>
+                <li><a href="#carattere">Carattere</a></li>
+                <li><a href="#obiettivi">Obiettivi</a></li>
+                <li><a href="#segreto">Segreto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1>James "Doc" Cartwright</h1>
+            <p class="subtitle">"Un uomo può cambiare, ma il suo passato cavalca sempre dietro di lui"</p>
+            
+            <div class="character-info">
+                <div class="info-item">
+                    <strong>Nome completo:</strong> James Cartwright
+                </div>
+                <div class="info-item">
+                    <strong>Soprannome:</strong> "Doc"
+                </div>
+                <div class="info-item">
+                    <strong>Data di nascita:</strong> 12 settembre 1873
+                </div>
+                <div class="info-item">
+                    <strong>Luogo:</strong> Contea di Sweetwater, Wyoming
+                </div>
+                <div class="info-item">
+                    <strong>Età nel 1900:</strong> 27 anni
+                </div>
+            </div>
+        </header>
+
+        <section id="infanzia" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-child section-icon"></i>
+                <h2>Infanzia e gioventù (1873–1889)</h2>
+            </div>
+            <p>James nacque in una piccola fattoria della contea di Sweetwater, Wyoming, un territorio ancora in gran parte selvaggio, dove la vita era scandita dalle stagioni e dal duro lavoro della terra.</p>
+            
+            <p>Suo padre, George, era un uomo severo ma instancabile, erede di una famiglia di pionieri. Sua madre, Elizabeth, era l'anima gentile della casa, capace di tenere insieme la famiglia con affetto e pazienza. Con lei James imparò a leggere brani della Bibbia e semplici racconti; con suo padre imparò a cavalcare, a maneggiare attrezzi e a sparare.</p>
+            
+            <p>James non era figlio unico: condivideva la sua infanzia con due fratelli maggiori, Samuel e John, e una sorellina più piccola, Mary. Essendo il terzo, spesso si ritrovava a cavarsela da solo, sviluppando un carattere curioso e indipendente. Passava molto tempo all'aperto, esplorando le colline e osservando la natura, coltivando un senso di libertà che lo avrebbe segnato per sempre.</p>
+            
+            <p>Nel 1887, quando aveva solo 14 anni, la famiglia venne sconvolta dalla morte della madre per febbre tifoide. Quel vuoto cambiò per sempre l'atmosfera in casa: il padre, colpito dal dolore, divenne più severo e taciturno. James, legato profondamente a sua madre, sentì di perdere non solo una genitrice, ma l'unica figura che lo comprendeva davvero.</p>
+        </section>
+
+        <section id="svolta" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-cross section-icon"></i>
+                <h2>La svolta: la morte del padre (1889)</h2>
+            </div>
+            <p>Due anni dopo, nel 1889, un incidente agricolo portò via anche suo padre George. James aveva allora 16 anni. La fattoria, con tutte le sue fatiche, passò ai fratelli maggiori. Samuel e John scelsero di restare e prendersi carico della terra, ma James non si sentiva fatto per quella vita. Il legame con la fattoria era ormai spezzato: per lui rappresentava solo sacrifici e dolore.</p>
+            
+            <p>Con un cavallo, pochi dollari e la pistola che suo padre aveva conservato dalla Guerra Civile, decise di abbandonare Sweetwater. Non sapeva ancora cosa lo aspettasse, ma aveva chiaro che non sarebbe tornato indietro.</p>
+        </section>
+
+        <section id="erranti" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-hat-cowboy section-icon"></i>
+                <h2>Gli anni erranti (1889–1896)</h2>
+            </div>
+            <p>Per i successivi anni James visse da girovago. Spostandosi tra Wyoming, Colorado e New Mexico, cercò di sopravvivere come poteva. Accettò lavori occasionali come bracciante o manovale, ma spesso li abbandonava dopo poco, incapace di restare fermo a lungo.</p>
+            
+            <p>Con il tempo, si lasciò trascinare anche in attività meno onorevoli: partite di carte truccate, piccoli imbrogli ai danni di viaggiatori e commercianti, qualche furto con altri ragazzi alla ricerca di fortuna. Non era un violento, ma scoprì di avere sangue freddo e una certa abilità nel pianificare e ragionare sotto pressione.</p>
+            
+            <p>Fu proprio in questi anni che guadagnò il soprannome di "Doc", perché affrontava ogni situazione con calma chirurgica, come se tagliasse via il superfluo per concentrarsi solo su ciò che contava.</p>
+            
+            <p><strong>Il gruppo di fuorilegge:</strong> Intorno al 1890 entrò in contatto con una piccola banda di fuorilegge. Non erano famosi né numerosi, ma riuscivano a vivere di assalti a diligenze isolate e colpi ben calcolati. James non fu mai tra i più aggressivi: il suo ruolo era più quello di osservatore e stratega improvvisato.</p>
+            
+            <p>Col passare del tempo, però, iniziò a vedere il lato oscuro di quella vita: amici che cadevano in sparatorie, altri catturati dalla legge, altri ancora che sparivano nel nulla. La gloria promessa non arrivava mai, solo paura e sangue.</p>
+        </section>
+
+        <section id="rapina" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-skull-crossbones section-icon"></i>
+                <h2>La rapina fallita di Laramie (1896)</h2>
+            </div>
+            <p>Il punto di rottura arrivò nel 1896. La banda tentò un colpo in una piccola banca di Laramie. Sembrava un piano semplice, ma qualcosa andò storto: una guardia riuscì a dare l'allarme e lo scontro a fuoco che ne seguì lasciò a terra tre membri della banda e portò all'arresto di altri cinque.</p>
+            
+            <p>James sopravvisse per miracolo, fuggendo con appena due compagni e raccogliendo in fretta qualche dollaro. Quella notte capì che la sua vita da fuorilegge era finita: se avesse continuato, presto avrebbe trovato la morte o la forca.</p>
+        </section>
+
+        <section id="fuga" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-horse section-icon"></i>
+                <h2>La fuga e la ricerca di redenzione (1896–1900)</h2>
+            </div>
+            <p>Negli anni successivi cambiò spesso nome e luogo, cercando di tenere un basso profilo. Lavorò come bracciante nei ranch, come stalliere, e perfino come aiutante in un'infermeria di frontiera, dove imparò nozioni di base sulle cure e sulle ferite. Questo rafforzò ulteriormente il suo soprannome.</p>
+            
+            <p>Si sforzava di restare lontano da guai, ma il timore di essere riconosciuto lo accompagnava sempre. Dormiva spesso con un occhio aperto, pronto a ripartire da un momento all'altro.</p>
+        </section>
+
+        <section id="westborn" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-map-marked-alt section-icon"></i>
+                <h2>Westborn: un nuovo inizio (1900)</h2>
+            </div>
+            <p>Nel 1900 James giunse in una contea prospera e popolata: Westborn. Lì vide l'occasione di una vita nuova: un posto dove poter passare inosservato, trovare lavoro onesto e forse, col tempo, costruire una nuova identità.</p>
+            
+            <p>Non cerca gloria né ricchezza: gli basta una seconda possibilità. Ma dentro di sé sa che il suo passato è una lama sottile pronta a riaprirsi al minimo errore.</p>
+        </section>
+
+        <section id="carattere" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-user-ninja section-icon"></i>
+                <h2>Mentalità e carattere</h2>
+            </div>
+            <ul>
+                <li><strong>Alfabetizzazione:</strong> sa leggere e scrivere grazie agli insegnamenti della madre, anche se in modo semplice.</li>
+                <li><strong>Religione:</strong> educato cristianamente, ha perso gran parte della sua fede dopo la morte della madre, ma porta ancora con sé un piccolo Nuovo Testamento consumato dal tempo.</li>
+                <li><strong>Carattere:</strong> riflessivo e calmo, diffidente verso le autorità. Ha imparato a pensare prima di agire e a nascondere le proprie emozioni.</li>
+                <li><strong>Valori:</strong> disprezza la violenza gratuita. Non cerca risse, ma non esita a difendersi se messo alle strette.</li>
+            </ul>
+        </section>
+
+        <section id="obiettivi" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-bullseye section-icon"></i>
+                <h2>Obiettivi</h2>
+            </div>
+            <ul>
+                <li><strong>A breve termine:</strong> trovare un lavoro stabile e guadagnarsi la fiducia della comunità.</li>
+                <li><strong>A lungo termine:</strong> ricostruirsi un nome libero dalle ombre del passato e, forse, creare una famiglia.</li>
+            </ul>
+        </section>
+
+        <section id="segreto" class="section animate-on-scroll">
+            <div class="section-header">
+                <i class="fas fa-mask section-icon"></i>
+                <h2>Segreto</h2>
+            </div>
+            <p>James è stato coinvolto nella rapina di Laramie del 1896. Non è mai stato catturato, ma il rischio che qualcuno lo riconosca o scopra la verità lo perseguita costantemente.</p>
+        </section>
+
+        <div class="quote-box">
+            <blockquote>
+                A man can change, but his past always rides behind him.
+            </blockquote>
+        </div>
+    </div>
+
+<script>
+        // Audio MP3 player
+        let audio;
+        let isPlaying = false;
+
+        // Initialize audio
+        function initAudio() {
+            if (!audio) {
+                // Sostituisci 'western-music.mp3' con il nome del tuo file MP3
+                audio = new Audio('doc_music.mp3');
+                audio.loop = true; // Loop continuo
+                audio.volume = 0.5; // Volume iniziale al 50%
+                
+                // Gestione eventi audio
+                audio.addEventListener('loadstart', () => {
+                    console.log('Caricamento audio iniziato...');
+                });
+                
+                audio.addEventListener('canplay', () => {
+                    console.log('Audio pronto per essere riprodotto');
+                });
+                
+                audio.addEventListener('error', (e) => {
+                    console.error('Errore nel caricamento dell\'audio:', e);
+                });
+            }
+        }
+
+        // Music player functionality
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        playBtn.addEventListener('click', () => {
+            initAudio();
+            
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    isPlaying = true;
+                }).catch(error => {
+                    console.error('Errore nella riproduzione:', error);
+                });
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                isPlaying = false;
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            if (audio) {
+                audio.volume = e.target.value / 100;
+            }
+        });
+
+        // Opzionale: Auto-play con interazione utente
+        document.addEventListener('click', () => {
+            if (!audio) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // Scroll animations
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            const windowHeight = window.innerHeight;
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-links a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initialize animations on scroll
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+
+        // Parallax effect for background
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('body::before');
+            const speed = scrolled * 0.5;
+        });
+
+        // Loading screen management
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const sections = document.querySelectorAll('.section');
+                sections.forEach((section, index) => {
+                    setTimeout(() => {
+                        section.classList.add('animate');
+                    }, index * 200);
+                });
+            }, 4000);
+        });
+
+        // Enhanced hover effects for sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                section.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            section.addEventListener('mouseleave', () => {
+                section.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Dynamic text effects
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Easter egg: Konami code for special effect
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up Up Down Down Left Right Left Right B A
+
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                // Special western effect
+                document.body.style.filter = 'sepia(100%) contrast(120%) brightness(110%)';
+                document.body.style.transition = 'filter 2s ease';
+                
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 5000);
+                
+                konamiCode = [];
+            }
+        });
+
+        // Random tumbleweed effect (subtle)
+        function createTumbleweed() {
+            const tumbleweed = document.createElement('div');
+            tumbleweed.innerHTML = '🌾';
+            tumbleweed.style.position = 'fixed';
+            tumbleweed.style.fontSize = '20px';
+            tumbleweed.style.opacity = '0.3';
+            tumbleweed.style.pointerEvents = 'none';
+            tumbleweed.style.zIndex = '10';
+            tumbleweed.style.left = '-50px';
+            tumbleweed.style.top = Math.random() * window.innerHeight + 'px';
+            tumbleweed.style.transition = 'transform 15s linear';
+            
+            document.body.appendChild(tumbleweed);
+            
+            setTimeout(() => {
+                tumbleweed.style.transform = `translateX(${window.innerWidth + 100}px) rotate(720deg)`;
+            }, 100);
+            
+            setTimeout(() => {
+                document.body.removeChild(tumbleweed);
+            }, 15000);
+        }
+
+        // Occasional tumbleweed
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance every 30 seconds
+                createTumbleweed();
+            }
+        }, 30000);
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add initial load animation to sections
+            setTimeout(() => {
+                animateOnScroll();
+            }, 4500);
+        });
+    </script>
+</body>
+</html>
