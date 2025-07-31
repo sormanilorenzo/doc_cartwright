@@ -14,6 +14,117 @@
             box-sizing: border-box;
         }
         
+        /* Start Screen Styles */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c1810 0%, #654321 50%, #8B4513 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1s ease-out;
+        }
+        
+        .start-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .start-logo {
+            width: 350px;
+            height: 250px;
+            background: url('doclogo.png') center/contain no-repeat;
+            margin-bottom: 3rem;
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .start-title {
+            color: #F5DEB3;
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        
+        .start-subtitle {
+            color: #D2B48C;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 3rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+        
+        .start-button {
+            background: linear-gradient(135deg, #8B4513, #D2B48C);
+            color: #2c1810;
+            border: 3px solid #F5DEB3;
+            padding: 20px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245, 222, 179, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+            background: linear-gradient(135deg, #A0522D, #F5DEB3);
+        }
+        
+        .start-button:hover::before {
+            left: 100%;
+        }
+        
+        .start-button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+        
+        .start-instructions {
+            color: #D2B48C;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
         /* Loading Screen Styles */
         .loading-screen {
             position: fixed;
@@ -27,6 +138,17 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .loading-screen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-screen.fade-out {
             animation: fadeOut 1s ease-in-out 3s forwards;
         }
         
@@ -43,7 +165,7 @@
             font-size: 2rem;
             margin-top: 2rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-            animation: pulse 2s ease-in-out infinite;
+            animation: loadingPulse 2s ease-in-out infinite;
         }
         
         @keyframes fadeInOut {
@@ -51,7 +173,7 @@
             50% { opacity: 1; transform: scale(1); }
         }
         
-        @keyframes pulse {
+        @keyframes loadingPulse {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
         }
@@ -75,6 +197,13 @@
             z-index: 1001;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .music-player.visible {
+            opacity: 1;
+            visibility: visible;
         }
         
         .music-player:hover {
@@ -182,11 +311,15 @@
             padding: 1rem 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             transform: translateY(-100px);
-            animation: slideDown 1s ease-out 3.5s forwards;
+            opacity: 0;
+        }
+        
+        .navbar.visible {
+            animation: slideDown 1s ease-out forwards;
         }
         
         @keyframes slideDown {
-            to { transform: translateY(0); }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .nav-container {
@@ -251,7 +384,10 @@
             margin: 0 auto;
             padding: 100px 2rem 2rem;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 4s forwards;
+        }
+        
+        .container.visible {
+            animation: fadeInUp 1s ease-out forwards;
         }
         
         @keyframes fadeInUp {
@@ -269,11 +405,15 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
             transform: scale(0.9);
-            animation: scaleIn 0.8s ease-out 4.5s forwards;
+            opacity: 0;
+        }
+        
+        .header.visible {
+            animation: scaleIn 0.8s ease-out forwards;
         }
         
         @keyframes scaleIn {
-            to { transform: scale(1); }
+            to { transform: scale(1); opacity: 1; }
         }
         
         .header::before {
@@ -312,7 +452,7 @@
             color: #8B4513;
             font-style: italic;
             margin-bottom: 1rem;
-            animation: typewriter 2s steps(60) 5s forwards;
+            animation: typewriter 2s steps(60) 1s forwards;
             overflow: hidden;
             white-space: nowrap;
             border-right: 2px solid #8B4513;
@@ -339,17 +479,20 @@
             transition: all 0.3s ease;
             transform: translateX(-20px);
             opacity: 0;
+        }
+        
+        .info-item.visible {
             animation: slideInLeft 0.6s ease-out forwards;
         }
         
-        .info-item:nth-child(1) { animation-delay: 6.5s; }
-        .info-item:nth-child(2) { animation-delay: 6.7s; }
-        .info-item:nth-child(3) { animation-delay: 6.9s; }
-        .info-item:nth-child(4) { animation-delay: 7.1s; }
-        .info-item:nth-child(5) { animation-delay: 7.3s; }
-        .info-item:nth-child(6) { animation-delay: 7.5s; }
-        .info-item:nth-child(7) { animation-delay: 7.7s; }
-        .info-item:nth-child(8) { animation-delay: 7.9s; }
+        .info-item:nth-child(1) { animation-delay: 2.5s; }
+        .info-item:nth-child(2) { animation-delay: 2.7s; }
+        .info-item:nth-child(3) { animation-delay: 2.9s; }
+        .info-item:nth-child(4) { animation-delay: 3.1s; }
+        .info-item:nth-child(5) { animation-delay: 3.3s; }
+        .info-item:nth-child(6) { animation-delay: 3.5s; }
+        .info-item:nth-child(7) { animation-delay: 3.7s; }
+        .info-item:nth-child(8) { animation-delay: 3.9s; }
         
         @keyframes slideInLeft {
             to { transform: translateX(0); opacity: 1; }
@@ -591,6 +734,20 @@
             .volume-slider {
                 width: 40px;
             }
+            
+            .start-title {
+                font-size: 2.5rem;
+            }
+            
+            .start-logo {
+                width: 300px;
+                height: 200px;
+            }
+            
+            .start-button {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -620,10 +777,35 @@
             .loading-text {
                 font-size: 1.5rem;
             }
+            
+            .start-title {
+                font-size: 2rem;
+            }
+            
+            .start-logo {
+                width: 250px;
+                height: 150px;
+            }
+            
+            .start-button {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <div class="start-logo"></div>
+        <h1 class="start-title">James "Doc" Cartwright</h1>
+        <p class="start-subtitle">Benvenuto nel selvaggio West</p>
+        <button class="start-button" id="startButton">
+            <i class="fas fa-play"></i> Inizia l'Avventura
+        </button>
+        <p class="start-instructions">Clicca per iniziare con musica e animazioni</p>
+    </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-image"></div>
@@ -631,10 +813,10 @@
     </div>
 
     <!-- Music Player -->
-    <div class="music-player">
+    <div class="music-player" id="musicPlayer">
         <div class="player-controls">
             <button class="play-btn" id="playBtn">
-                <i class="fas fa-play"></i>
+                <i class="fas fa-pause"></i>
             </button>
             <div class="track-info">
                 <div class="track-title">Doc Cartwright</div>
@@ -647,7 +829,7 @@
         </div>
     </div>
 
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#" class="nav-brand">Doc Cartwright</a>
             <ul class="nav-links">
@@ -664,8 +846,8 @@
         </div>
     </nav>
 
-    <div class="container">
-        <header class="header">
+    <div class="container" id="container">
+        <header class="header" id="header">
             <h1>James "Doc" Cartwright</h1>
             <p class="subtitle">"Un uomo può cambiare, ma il suo passato cavalca sempre dietro di lui"</p>
             
@@ -703,13 +885,13 @@
                 <h2>Infanzia e gioventù (1873–1889)</h2>
             </div>
             <h3>Una vita tra natura e sacrifici</h3>
-            <p>James nacque in una piccola fattoria della contea di Sweetwater, Wyoming, un territorio ancora in gran parte selvaggio, dove la vita era scandita dalle stagioni e dal duro lavoro della terra. La famiglia Cartwright viveva in una modesta casa di legno circondata da pascoli e campi che richiedevano cure costanti. La vita non era semplice, ma c’era una dignità silenziosa nel sacrificio quotidiano.</p>
+            <p>James nacque in una piccola fattoria della contea di Sweetwater, Wyoming, un territorio ancora in gran parte selvaggio, dove la vita era scandita dalle stagioni e dal duro lavoro della terra. La famiglia Cartwright viveva in una modesta casa di legno circondata da pascoli e campi che richiedevano cure costanti. La vita non era semplice, ma c'era una dignità silenziosa nel sacrificio quotidiano.</p>
             
             <h3>La famiglia Cartwright</h3>
-            <p>Suo padre, George, era un uomo severo ma instancabile, erede di una famiglia di pionieri che aveva affrontato le fatiche della frontiera. Cresciuto con il senso del dovere, trasmise a James l’importanza della disciplina e del lavoro. Sua madre, Elizabeth, era l’anima gentile della casa, capace di tenere unita la famiglia anche nei momenti più difficili. Con lei James imparò a leggere brani della Bibbia e semplici racconti. La sua voce calma rimaneva per lui una fonte di conforto, anche molti anni dopo la sua morte.</p>
+            <p>Suo padre, George, era un uomo severo ma instancabile, erede di una famiglia di pionieri che aveva affrontato le fatiche della frontiera. Cresciuto con il senso del dovere, trasmise a James l'importanza della disciplina e del lavoro. Sua madre, Elizabeth, era l'anima gentile della casa, capace di tenere unita la famiglia anche nei momenti più difficili. Con lei James imparò a leggere brani della Bibbia e semplici racconti. La sua voce calma rimaneva per lui una fonte di conforto, anche molti anni dopo la sua morte.</p>
 
-            <h3>Fratelli e giochi d’infanzia</h3>
-            <p>James non era figlio unico: condivideva la sua infanzia con due fratelli maggiori, Samuel e John, e una sorellina più piccola, Mary. Samuel, il primogenito, era il più responsabile e spesso prendeva l’iniziativa nei lavori della fattoria. John, di poco più grande di James, aveva invece un carattere ribelle e avventuroso, qualità che spesso trascinavano anche James in piccole marachelle. Mary, nata nel 1876, era la luce della famiglia e James sviluppò per lei un forte senso di protezione. Crescendo in questo ambiente, James imparò presto a cavarsela da solo e a sviluppare un carattere curioso e indipendente. Passava molto tempo all’aperto, esplorando le colline e osservando la natura, coltivando un senso di libertà che lo avrebbe segnato per sempre.</p>
+            <h3>Fratelli e giochi d'infanzia</h3>
+            <p>James non era figlio unico: condivideva la sua infanzia con due fratelli maggiori, Samuel e John, e una sorellina più piccola, Mary. Samuel, il primogenito, era il più responsabile e spesso prendeva l'iniziativa nei lavori della fattoria. John, di poco più grande di James, aveva invece un carattere ribelle e avventuroso, qualità che spesso trascinavano anche James in piccole marachelle. Mary, nata nel 1876, era la luce della famiglia e James sviluppò per lei un forte senso di protezione. Crescendo in questo ambiente, James imparò presto a cavarsela da solo e a sviluppare un carattere curioso e indipendente. Passava molto tempo all'aperto, esplorando le colline e osservando la natura, coltivando un senso di libertà che lo avrebbe segnato per sempre.</p>
 
             <h3>Il primo grande dolore</h3>
             <p>Nel 1887, quando aveva solo 14 anni, la famiglia venne sconvolta dalla morte della madre per febbre tifoide. Quella perdita lasciò un vuoto incolmabile: la casa, che un tempo era stata calda e accogliente, divenne più fredda e silenziosa. Il padre, distrutto dal dolore, si fece ancora più severo e taciturno, mentre James sentì di perdere non solo una madre, ma la persona che lo comprendeva davvero. Da quel momento, la sua adolescenza fu segnata dalla malinconia e dalla responsabilità precoce.</p>
@@ -728,9 +910,9 @@
                 <i class="fas fa-hat-cowboy section-icon"></i>
                 <h2>Gli anni erranti (1889–1896)</h2>
             </div>
-            <p>Per i successivi anni James visse da girovago. Si spostò tra Wyoming, Colorado e New Mexico, sopravvivendo con lavori occasionali come bracciante o manovale. Tuttavia, non riusciva mai a fermarsi troppo a lungo nello stesso posto: l’inquietudine e la ricerca di libertà lo spingevano sempre a ripartire. Con il tempo si lasciò trascinare anche in attività meno onorevoli: partite di carte truccate, piccoli imbrogli ai danni di viaggiatori e commercianti, e qualche furto in compagnia di altri giovani alla ricerca di fortuna. Pur non essendo incline alla violenza, scoprì di avere sangue freddo e una sorprendente capacità di ragionare sotto pressione.</p>
-            <h3>Il soprannome “Doc”</h3>
-            <p>Fu proprio in questi anni che guadagnò il soprannome di “Doc”. Non per aver studiato medicina, ma perché affrontava ogni situazione con una calma chirurgica, tagliando via il superfluo e concentrandosi solo su ciò che contava davvero. La sua lucidità in momenti di caos lo rese un elemento prezioso in ogni gruppo con cui viaggiava.</p>
+            <p>Per i successivi anni James visse da girovago. Si spostò tra Wyoming, Colorado e New Mexico, sopravvivendo con lavori occasionali come bracciante o manovale. Tuttavia, non riusciva mai a fermarsi troppo a lungo nello stesso posto: l'inquietudine e la ricerca di libertà lo spingevano sempre a ripartire. Con il tempo si lasciò trascinare anche in attività meno onorevoli: partite di carte truccate, piccoli imbrogli ai danni di viaggiatori e commercianti, e qualche furto in compagnia di altri giovani alla ricerca di fortuna. Pur non essendo incline alla violenza, scoprì di avere sangue freddo e una sorprendente capacità di ragionare sotto pressione.</p>
+            <h3>Il soprannome "Doc"</h3>
+            <p>Fu proprio in questi anni che guadagnò il soprannome di "Doc". Non per aver studiato medicina, ma perché affrontava ogni situazione con una calma chirurgica, tagliando via il superfluo e concentrandosi solo su ciò che contava davvero. La sua lucidità in momenti di caos lo rese un elemento prezioso in ogni gruppo con cui viaggiava.</p>
             <h3>Il gruppo di fuorilegge</h3>
             <p>Intorno al 1890 entrò in contatto con una piccola banda di fuorilegge. Non erano famosi né particolarmente numerosi, ma riuscivano a vivere con assalti a diligenze isolate e colpi ben calcolati. James non fu mai il più aggressivo: preferiva osservare e pianificare, spesso assumendo il ruolo di stratega improvvisato. Con il passare del tempo, però, cominciò a vedere il lato oscuro di quella vita: amici che cadevano in sparatorie, compagni catturati dalla legge e altri che semplicemente sparivano nel nulla. La gloria che sembrava promessa non arrivava mai, lasciando solo paura e sangue.</p>
         </section>
@@ -740,7 +922,7 @@
                 <i class="fas fa-skull-crossbones section-icon"></i>
                 <h2>La rapina fallita di Laramie (1896)</h2>
             </div>
-            <p>Il punto di rottura arrivò nel 1896, quando la banda tentò un colpo in una piccola banca di Laramie. Sembrava un piano semplice: entrare, intimorire i presenti e fuggire con l’incasso. Ma qualcosa andò storto. Una guardia riuscì a dare l’allarme e in pochi minuti la strada si trasformò in un campo di battaglia. Lo scontro a fuoco lasciò a terra tre membri della banda e portò all’arresto di altri cinque. James sopravvisse per miracolo, fuggendo con appena due compagni e raccogliendo in fretta pochi dollari. Quella notte capì che la sua vita da fuorilegge era finita: se avesse continuato, presto avrebbe trovato la morte o la forca.</p>
+            <p>Il punto di rottura arrivò nel 1896, quando la banda tentò un colpo in una piccola banca di Laramie. Sembrava un piano semplice: entrare, intimorire i presenti e fuggire con l'incasso. Ma qualcosa andò storto. Una guardia riuscì a dare l'allarme e in pochi minuti la strada si trasformò in un campo di battaglia. Lo scontro a fuoco lasciò a terra tre membri della banda e portò all'arresto di altri cinque. James sopravvisse per miracolo, fuggendo con appena due compagni e raccogliendo in fretta pochi dollari. Quella notte capì che la sua vita da fuorilegge era finita: se avesse continuato, presto avrebbe trovato la morte o la forca.</p>
         </section>
 
         <section id="fuga" class="section animate-on-scroll">
@@ -748,7 +930,7 @@
                 <i class="fas fa-horse section-icon"></i>
                 <h2>La fuga e la ricerca di redenzione (1896–1900)</h2>
             </div>
-            <p>Dopo Laramie, James cambiò spesso nome e luogo, vivendo costantemente nell’ombra. Trovò lavoro come bracciante nei ranch, come stalliere, e persino come aiutante in un’infermeria di frontiera, dove imparò nozioni di base sulle ferite e sulle cure. Questo non fece che consolidare il suo soprannome di “Doc”. Si sforzava di restare lontano dai guai, ma il timore di essere riconosciuto non lo abbandonava mai. Dormiva spesso con un occhio aperto, pronto a ripartire da un momento all’altro, portandosi dietro la consapevolezza che un passo falso poteva costargli la vita.</p>
+            <p>Dopo Laramie, James cambiò spesso nome e luogo, vivendo costantemente nell'ombra. Trovò lavoro come bracciante nei ranch, come stalliere, e persino come aiutante in un'infermeria di frontiera, dove imparò nozioni di base sulle ferite e sulle cure. Questo non fece che consolidare il suo soprannome di "Doc". Si sforzava di restare lontano dai guai, ma il timore di essere riconosciuto non lo abbandonava mai. Dormiva spesso con un occhio aperto, pronto a ripartire da un momento all'altro, portandosi dietro la consapevolezza che un passo falso poteva costargli la vita.</p>
         </section>
 
         <section id="westborn" class="section animate-on-scroll">
@@ -756,7 +938,7 @@
                 <i class="fas fa-map-marked-alt section-icon"></i>
                 <h2>Westborn: un nuovo inizio (1900)</h2>
             </div>
-            <p>Nel 1900 James giunse nella prospera contea di Westborn, una comunità in crescita con nuove opportunità. Qui vide l’occasione di lasciarsi alle spalle gli anni oscuri e costruirsi una nuova identità. Non cerca gloria né ricchezza: gli basta una seconda possibilità. Lavora duro per integrarsi e guadagnarsi la fiducia della gente del posto, pur consapevole che il suo passato è come una lama sottile, pronta a riaprirsi al minimo errore.</p>
+            <p>Nel 1900 James giunse nella prospera contea di Westborn, una comunità in crescita con nuove opportunità. Qui vide l'occasione di lasciarsi alle spalle gli anni oscuri e costruirsi una nuova identità. Non cerca gloria né ricchezza: gli basta una seconda possibilità. Lavora duro per integrarsi e guadagnarsi la fiducia della gente del posto, pur consapevole che il suo passato è come una lama sottile, pronta a riaprirsi al minimo errore.</p>
         </section>
 
         <section id="carattere" class="section animate-on-scroll">
@@ -788,7 +970,7 @@
                 <i class="fas fa-mask section-icon"></i>
                 <h2>Segreto</h2>
             </div>
-            <p>James è stato coinvolto nella rapina di Laramie del 1896. Non è mai stato catturato, ma il rischio che qualcuno lo riconosca o scopra la verità lo perseguita costantemente. Vive ogni giorno sapendo che il suo passato potrebbe riemergere da un momento all’altro.</p>
+            <p>James è stato coinvolto nella rapina di Laramie del 1896. Non è mai stato catturato, ma il rischio che qualcuno lo riconosca o scopra la verità lo perseguita costantemente. Vive ogni giorno sapendo che il suo passato potrebbe riemergere da un momento all'altro.</p>
         </section>
 
         <div class="quote-box">
@@ -799,19 +981,18 @@
     </div>
 
 <script>
-        // Audio MP3 player
+        // Variables
         let audio;
         let isPlaying = false;
+        let siteStarted = false;
 
         // Initialize audio
         function initAudio() {
             if (!audio) {
-                // Sostituisci 'western-music.mp3' con il nome del tuo file MP3
                 audio = new Audio('doc_music.mp3');
-                audio.loop = true; // Loop continuo
-                audio.volume = 0.5; // Volume iniziale al 50%
+                audio.loop = true;
+                audio.volume = 0.5;
                 
-                // Gestione eventi audio
                 audio.addEventListener('loadstart', () => {
                     console.log('Caricamento audio iniziato...');
                 });
@@ -826,24 +1007,76 @@
             }
         }
 
-        // Music player functionality
+        // Start button functionality
+        document.getElementById('startButton').addEventListener('click', () => {
+            // Initialize and start audio
+            initAudio();
+            audio.play().then(() => {
+                isPlaying = true;
+                console.log('Musica avviata');
+            }).catch(error => {
+                console.error('Errore nell\'avvio della musica:', error);
+            });
+
+            // Hide start screen
+            document.getElementById('startScreen').classList.add('hidden');
+            
+            // Show loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('active');
+                
+                // After loading, show main content
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('fade-out');
+                    
+                    // Show main content elements
+                    setTimeout(() => {
+                        document.getElementById('navbar').classList.add('visible');
+                        document.getElementById('container').classList.add('visible');
+                        document.getElementById('header').classList.add('visible');
+                        document.getElementById('musicPlayer').classList.add('visible');
+                        
+                        // Animate info items
+                        const infoItems = document.querySelectorAll('.info-item');
+                        infoItems.forEach(item => {
+                            item.classList.add('visible');
+                        });
+                        
+                        // Start scroll animations
+                        animateOnScroll();
+                        setTimeout(() => {
+                            const sections = document.querySelectorAll('.section');
+                            sections.forEach((section, index) => {
+                                setTimeout(() => {
+                                    section.classList.add('animate');
+                                }, index * 200);
+                            });
+                        }, 1000);
+                        
+                        siteStarted = true;
+                    }, 500);
+                }, 3000);
+            }, 1000);
+        });
+
+        // Music player controls
         const playBtn = document.getElementById('playBtn');
         const volumeSlider = document.getElementById('volumeSlider');
 
         playBtn.addEventListener('click', () => {
-            initAudio();
+            if (!audio) return;
             
-            if (!isPlaying) {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                isPlaying = false;
+            } else {
                 audio.play().then(() => {
                     playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                     isPlaying = true;
                 }).catch(error => {
                     console.error('Errore nella riproduzione:', error);
                 });
-            } else {
-                audio.pause();
-                playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                isPlaying = false;
             }
         });
 
@@ -853,15 +1086,10 @@
             }
         });
 
-        // Opzionale: Auto-play con interazione utente
-        document.addEventListener('click', () => {
-            if (!audio) {
-                initAudio();
-            }
-        }, { once: true });
-
         // Scroll animations
         function animateOnScroll() {
+            if (!siteStarted) return;
+            
             const elements = document.querySelectorAll('.animate-on-scroll');
             const windowHeight = window.innerHeight;
             
@@ -891,64 +1119,35 @@
 
         // Initialize animations on scroll
         window.addEventListener('scroll', animateOnScroll);
-        window.addEventListener('load', animateOnScroll);
-
-        // Parallax effect for background
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('body::before');
-            const speed = scrolled * 0.5;
-        });
-
-        // Loading screen management
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const sections = document.querySelectorAll('.section');
-                sections.forEach((section, index) => {
-                    setTimeout(() => {
-                        section.classList.add('animate');
-                    }, index * 200);
-                });
-            }, 4000);
-        });
 
         // Enhanced hover effects for sections
         document.querySelectorAll('.section').forEach(section => {
             section.addEventListener('mouseenter', () => {
-                section.style.transform = 'translateY(-10px) scale(1.02)';
+                if (siteStarted) {
+                    section.style.transform = 'translateY(-10px) scale(1.02)';
+                }
             });
             
             section.addEventListener('mouseleave', () => {
-                section.style.transform = 'translateY(0) scale(1)';
+                if (siteStarted) {
+                    section.style.transform = 'translateY(0) scale(1)';
+                }
             });
         });
 
-        // Dynamic text effects
-        function typeWriter(element, text, speed = 50) {
-            let i = 0;
-            element.innerHTML = '';
-            function typing() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(typing, speed);
-                }
-            }
-            typing();
-        }
-
         // Easter egg: Konami code for special effect
         let konamiCode = [];
-        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up Up Down Down Left Right Left Right B A
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
 
         document.addEventListener('keydown', (e) => {
+            if (!siteStarted) return;
+            
             konamiCode.push(e.keyCode);
             if (konamiCode.length > konamiSequence.length) {
                 konamiCode.shift();
             }
             
             if (konamiCode.join(',') === konamiSequence.join(',')) {
-                // Special western effect
                 document.body.style.filter = 'sepia(100%) contrast(120%) brightness(110%)';
                 document.body.style.transition = 'filter 2s ease';
                 
@@ -960,8 +1159,10 @@
             }
         });
 
-        // Random tumbleweed effect (subtle)
+        // Random tumbleweed effect
         function createTumbleweed() {
+            if (!siteStarted) return;
+            
             const tumbleweed = document.createElement('div');
             tumbleweed.innerHTML = '🌾';
             tumbleweed.style.position = 'fixed';
@@ -986,18 +1187,10 @@
 
         // Occasional tumbleweed
         setInterval(() => {
-            if (Math.random() < 0.1) { // 10% chance every 30 seconds
+            if (siteStarted && Math.random() < 0.1) {
                 createTumbleweed();
             }
         }, 30000);
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add initial load animation to sections
-            setTimeout(() => {
-                animateOnScroll();
-            }, 4500);
-        });
     </script>
 </body>
 </html>
